@@ -9,7 +9,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@drift-labs/sdk": "2.112.0-beta.11",
+    "@drift-labs/sdk": "2.118.0-beta.3",
     "@solana/web3.js": "^1.98.0"
   }
 }
