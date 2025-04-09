@@ -30,7 +30,9 @@ import {
 	type OrderParams,
 	generateSignedMsgUuid,
 	digestSignature,
-	type SignedMsgOrderParamsDelegateMessage
+	type SignedMsgOrderParamsDelegateMessage,
+    getOrderParams,
+    OrderType
 } from "@drift-labs/sdk";
 import { Connection, PublicKey } from "@solana/web3.js";
 
@@ -101,10 +103,20 @@ const orderSize = driftClient
 
 const slot = slotSubscriber.getSlot();
 const oracleInfo = driftClient.getOracleDataForPerpMarket(marketIndex);
-const highPrice = oracleInfo.price.muln(101).divn(100);
-const lowPrice = oracleInfo.price.muln(99).divn(100);
 
-const marketOrderParams = getMarketOrderParams({
+// absolute prices (auction starts 1% below oracle, ends 1% above oracle)
+//const highPrice = oracleInfo.price.muln(101).divn(100);
+//const lowPrice = oracleInfo.price.muln(99).divn(100);
+//const orderType = OrderType.MARKET;
+
+// oracle offset prices. Auction will float around the oracle price.
+// We want to have tight slippage params, so float around oracle-10bps and oracle+10bps
+const highPrice = oracleInfo.price.muln(10).divn(10000);
+const lowPrice = oracleInfo.price.muln(10).divn(10000).neg();
+const orderType = OrderType.ORACLE;
+
+const marketOrderParams = getOrderParams({
+	orderType,
 	marketIndex,
 	marketType: MarketType.PERP,
 	direction,
