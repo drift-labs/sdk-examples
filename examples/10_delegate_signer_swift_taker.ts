@@ -135,7 +135,7 @@ const orderMessage: SignedMsgOrderParamsDelegateMessage = {
 	takerPubkey: await driftClient.getUserAccountPublicKey(), // NOT driftClient.authority,
 };
 const { orderParams: message, signature } =
-	driftClient.signSignedMsgOrderParamsMessage(orderMessage, true);
+	driftClient.signSignedMsgOrderParamsMessage(orderMessage, true); // `true` only because we're siging as a delegate
 
 const hash = digestSignature(Uint8Array.from(signature));
 console.log(
@@ -152,7 +152,9 @@ const response = await fetch(swiftUrl + '/orders', {
 		market_type: 'perp',
 		message: message.toString(),
 		signature: signature.toString('base64'),
-		taker_pubkey: driftClient.authority.toBase58(), // authority of the user you are trading for
+		// @deprecated, use taker_authority instead
+		// taker_pubkey: driftClient.authority.toBase58(), // authority of the user you are trading for
+		taker_authority: driftClient.authority.toBase58(), // authority of the user you are trading for
 		signing_authority: driftClient.wallet.publicKey.toBase58(), // authority of the signing delegate
 	}),
 });
